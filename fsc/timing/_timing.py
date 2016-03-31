@@ -44,47 +44,58 @@ class timed(object):
 
 
 class monitored(object):
-
+    """TODO"""
     def __init__(self, seq, name="unknown"):
         self.seq = seq
         self.name = name
 
     def __iter__(self):
-        GREENB(self.name)
+        print(green(self.name))
         print("--- initializing progress bar ---")
         N = len(self)
-        eta = collections.deque()
-        max_eta = 10
-        last_i_x = 0
-        for i in range(max_eta):
-            eta.append([0, 0])
+        Sample = collections.namedtuple('Sample', ['idx', 'time'])
+        samples = collections.deque(
+            Sample(idx=0, time=0) for _ in range(10)
+        )
+        
+        last_idx = 0
 
         n_len = str(len(str(N)))
         format_str = "{renter}({:>" + n_len + \
             "}/{}) {} {yellow}done in {yellowb}{}{none}"
 
-        with timer(silent=True) as t:
-            for i_x, x in enumerate(self.seq):
-                passed = t.watch
+        with timed(verbose=False) as t:
+            for idx, x in enumerate(self.seq):
+                passed = t.time
                 if passed > 1:
-                    p = (i_x + 1.0) / N
-
-                    eta.rotate(-1)
-                    eta[-1] = [(i_x - last_i_x), passed]
-                    last_i_x = i_x
+                    samples.rotate(-1)
+                    samples[-1] = Sample([(idx - last_idx), passed]
+                    last_idx = idx
                     t.reset()
-                    idx_per_sec = sum([e[0] for e in eta]) / \
-                        sum([e[1] for e in eta])
+                    idx_per_sec = (
+                        sum(s.idx for s in samples) / 
+                        sum(s.time for s in samples)
+                    )
 
-                    predict = (N - i_x) / idx_per_sec
+                    predict = (N - idx) / idx_per_sec
 
-                    print(format_str.format(i_x + 1, N, progress_bar(p), ms_time_str(predict), **color)
-                          )
+                    print(format_str.format(
+                        idx + 1,
+                        N,
+                        progress_bar((idx + 1.0) / N),
+                        ms_time_str(predict),
+                        **color
+                    ))
 
                 yield x
 
-        print("{renter}({}/{}) {} {green}done in {greenb}{}{none}".format(N, N, progress_bar(1), ms_time_str(t.time), **color)
-              )
+        print("{renter}({}/{}) {} {green}done in {greenb}{}{none}".format(
+            N,
+            N,
+            progress_bar(1),
+            ms_time_str(t.time),
+            **color
+        ))
 
     def __len__(self):
         return len(self.seq)
