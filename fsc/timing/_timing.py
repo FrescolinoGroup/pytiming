@@ -69,7 +69,7 @@ class monitored(object):
                 passed = t.time
                 if passed > 1:
                     samples.rotate(-1)
-                    samples[-1] = Sample([(idx - last_idx), passed]
+                    samples[-1] = Sample(idx=(idx - last_idx), time=passed)
                     last_idx = idx
                     t.reset()
                     idx_per_sec = (
