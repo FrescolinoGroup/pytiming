@@ -30,6 +30,7 @@ setup(
     ],
     url='http://frescolinogroup.github.io/frescolino/pytiming/' + '.'.join(version.split('.')[:2]),
     include_package_data=True,
+    install_requires=['blessings', 'fsc.export', 'fsc.formatting'],
     author='C. Frescolino',
     author_email='frescolino@lists.phys.ethz.ch',
     description=description,
