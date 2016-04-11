@@ -54,22 +54,19 @@ class monitored(object):
         print("--- initializing progress bar ---")
         N = len(self)
         Sample = collections.namedtuple('Sample', ['idx', 'time'])
-        samples = collections.deque(
-            Sample(idx=0, time=0) for _ in range(10)
-        )
+        samples = collections.deque(maxlen=10)
         
-        last_idx = 0
 
         n_len = str(len(str(N)))
         format_str = "{renter}({:>" + n_len + \
             "}/{}) {} {yellow}done in {yellowb}{}{none}"
 
         with timed(verbose=False) as t:
+            last_idx = 0
             for idx, x in enumerate(self.seq):
                 passed = t.time
                 if passed > 1:
-                    samples.rotate(-1)
-                    samples[-1] = Sample(idx=(idx - last_idx), time=passed)
+                    samples.append(Sample(idx=(idx - last_idx), time=passed))
                     last_idx = idx
                     t.reset()
                     idx_per_sec = (
