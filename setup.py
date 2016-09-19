@@ -5,6 +5,7 @@
 # Date:    30.03.2016 00:29:06 CEST
 # File:    setup.py
 
+import sys
 
 from setuptools import setup
 
@@ -22,6 +23,10 @@ except IOError:
 with open('version.txt', 'r') as f:
     version = f.read().strip()
 
+requirements = ['blessings', 'fsc.export', 'fsc.formatting']
+if sys.version_info < (3,):
+    requirements.append('fsc')
+
 setup(
     name=pkgname_qualified,
     version=version,
@@ -30,7 +35,7 @@ setup(
     ],
     url='http://frescolinogroup.github.io/frescolino/pytiming/' + '.'.join(version.split('.')[:2]),
     include_package_data=True,
-    install_requires=['blessings', 'fsc.export', 'fsc.formatting'],
+    install_requires=requirements,
     author='C. Frescolino',
     author_email='frescolino@lists.phys.ethz.ch',
     description=description,
